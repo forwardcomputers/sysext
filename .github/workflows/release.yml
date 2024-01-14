@@ -30,7 +30,7 @@ jobs:
             pwd
             ls -la
 
-          APPS=( $( find . -maxdepth 1 -name "create*.sh" -exec basename {} \; ) )
+          APPS=( $( find . -maxdepth 1 -name "create*.sh" -exec bash -c 'echo ${0:9:-10}' {} \; ) )
           images=()
 
           for app in "${APPS[@]}"; do
@@ -44,7 +44,7 @@ jobs:
               component="${image%-*}"
               version="${image#*-}"
               for arch in x86-64 arm64; do
-                ARCH="${arch}" "./${component}" "${version}" "${component}"
+                ARCH="${arch}" "./create_${component}_sysext.sh" "${version}" "${component}"
                 mv "${component}.raw" "${image}-${arch}.raw"
               done
               streams+=("${component}:-@v")
