@@ -18,6 +18,7 @@ jobs:
       - name: build
         run: |
           set -euxo pipefail
+          echo "_update=false" >> $env:GITHUB_ENV
 
           sudo apt update -qq && sudo apt install -yqq \
             curl \
@@ -26,7 +27,7 @@ jobs:
             xz-utils \
             gawk
 
-          curl -sLO --output-dir /tmp $( curl -sL 'https://api.github.com/repos/forwardcomputers/sysext/releases/latest' | jq -r '.assets[] | select( .name=="SHA256SUMS" ).browser_download_url' )
+          curl -fsSLO --output-dir /tmp $( curl -sL 'https://api.github.com/repos/forwardcomputers/sysext/releases/latest' | jq -r '.assets[] | select( .name=="SHA256SUMS" ).browser_download_url' )
 
           APPS=( $( find . -maxdepth 1 -name "create*.sh" -exec bash -c 'echo ${0:9:-10}' {} \; ) )
           images=()
@@ -48,45 +49,51 @@ jobs:
               done
               streams+=("${component}:-@v")
           done
-          for stream in "${streams[@]}"; do
-              component="${stream%:*}"
-              pattern="${stream#*:}"
-              cat << EOF > "${component}.conf"
-           [Transfer]
-           Verify=false
-           [Source]
-           Type=url-file
-           Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
-           MatchPattern=${component}${pattern}-%a.raw
-           [Target]
-           InstancesMax=3
-           Type=regular-file
-           Path=/opt/extensions/${component%-*}
-           CurrentSymlink=/etc/extensions/${component%-*}.raw
-          EOF
-          done
+          if (( ${#streams[@]} )); then
+            for stream in "${streams[@]}"; do
+                component="${stream%:*}"
+                pattern="${stream#*:}"
+                cat << EOF > "${component}.conf"
+            [Transfer]
+            Verify=false
+            [Source]
+            Type=url-file
+            Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
+            MatchPattern=${component}${pattern}-%a.raw
+            [Target]
+            InstancesMax=3
+            Type=regular-file
+            Path=/opt/extensions/${component%-*}
+            CurrentSymlink=/etc/extensions/${component%-*}.raw
+            EOF
+            done
 
-          cat << EOF > "noop.conf"
-          [Source]
-          Type=regular-file
-          Path=/
-          MatchPattern=invalid@v.raw
-          [Target]
-          Type=regular-file
-          Path=/
-          EOF
+            cat << EOF > "noop.conf"
+            [Source]
+            Type=regular-file
+            Path=/
+            MatchPattern=invalid@v.raw
+            [Target]
+            Type=regular-file
+            Path=/
+            EOF
 
-          # Fetch the current SHA256SUMS to append to it the new list of sha256 sums.
-          curl -fsSLO https://github.com/forwardcomputers/sysext/releases/download/latest/SHA256SUMS || true
-          sha256sum *.raw >> SHA256SUMS
-          sort --unique --key 2 --output SHA256SUMS SHA256SUMS
+            # Fetch the current SHA256SUMS to append to it the new list of sha256 sums.
+            curl -fsSLO https://github.com/forwardcomputers/sysext/releases/download/latest/SHA256SUMS || true
+            sha256sum *.raw >> SHA256SUMS
+            sort --unique --key 2 --output SHA256SUMS SHA256SUMS
+
+            echo "_update=true" >> $env:GITHUB_ENV
+          fi
 
       # create a Github release with the generated artifacts
       - name: Generate release tag
+        if: env._update == 'true'
         id: tag
         run: |
           echo "::set-output name=release_tag::Built_$(date +"%Y.%m.%d_%H-%M")"
       - name: release
+        if: env._update == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
