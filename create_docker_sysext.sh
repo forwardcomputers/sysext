@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+#_VERSION curl -sL 'https://api.github.com/repos/moby/moby/releases/latest' | jq -r '.tag_name[1:]'
 
 export ARCH="${ARCH-x86-64}"
 SCRIPTFOLDER="$(dirname "$(readlink -f "$0")")"
@@ -8,7 +9,7 @@ ONLY_DOCKER="${ONLY_DOCKER:-0}"
 
 if [ $# -lt 2 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   echo "Usage: $0 VERSION SYSEXTNAME"
-  echo "The script will download the Docker release tar ball (e.g., for 20.10.13) and create a sysext squashfs image with the name SYSEXTNAME.raw in the current folder."
+  echo "The script will download the install files (e.g., for 20.10.13) and create a sysext squashfs image with the name SYSEXTNAME.raw in the current folder."
   echo "A temporary directory named SYSEXTNAME in the current folder will be created and deleted again."
   echo "All files in the sysext image will be owned by root."
   echo "The necessary systemd services will be created by this script, by default only docker.socket will be enabled."
