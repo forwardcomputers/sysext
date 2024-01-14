@@ -1,9 +1,11 @@
 name: Build and release Systemd sysext images
 on:
+  push:
+    tags:
+      - '*'
   schedule:
     # Times are in UTC, this job is run daily @ 14HRS = 9AM EST, 20HRS = 3PM EST
     - cron: "0 14,20 * * *"
-
   workflow_dispatch:
 
 jobs:
@@ -14,7 +16,7 @@ jobs:
       contents: write
     steps:
       # checkout the sources
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # build the images and generate a manifest
       - name: build
         run: |
