@@ -65,7 +65,7 @@ jobs:
              Type=regular-file
              Path=/opt/extensions/${component%-*}
              CurrentSymlink=/etc/extensions/${component%-*}.raw
-            EOF
+                EOF
             done
 
             cat << EOF > "noop.conf"
