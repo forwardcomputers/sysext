@@ -27,9 +27,6 @@ jobs:
             xz-utils \
             gawk
 
-            pwd
-            ls -la
-
           APPS=( $( find . -maxdepth 1 -name "create*.sh" -exec bash -c 'echo ${0:9:-10}' {} \; ) )
           images=()
 

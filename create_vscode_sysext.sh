@@ -50,6 +50,4 @@ cd "${SCRIPTFOLDER}/${SYSEXTNAME}"
 
 cd "${SCRIPTFOLDER}"
 "${SCRIPTFOLDER}"/bake.sh "${SYSEXTNAME}"
-mkdir -p result
-mv "${SYSEXTNAME}.raw" result/
 rm -rf "${SYSEXTNAME}"
