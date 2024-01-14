@@ -53,30 +53,30 @@ jobs:
             for stream in "${streams[@]}"; do
                 component="${stream%:*}"
                 pattern="${stream#*:}"
-                cat << EOF > "${component}.conf"
-           [Transfer]
-           Verify=false
-           [Source]
-           Type=url-file
-           Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
-           MatchPattern=${component}${pattern}-%a.raw
-           [Target]
-           InstancesMax=3
-           Type=regular-file
-           Path=/opt/extensions/${component%-*}
-           CurrentSymlink=/etc/extensions/${component%-*}.raw
-                EOF
+                cat <<-_EOF > "${component}.conf"
+									[Transfer]
+									Verify=false
+									[Source]
+									Type=url-file
+									Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
+									MatchPattern=${component}${pattern}-%a.raw
+									[Target]
+									InstancesMax=3
+									Type=regular-file
+									Path=/opt/extensions/${component%-*}
+									CurrentSymlink=/etc/extensions/${component%-*}.raw
+                _EOF
             done
 
-            cat << EOF > "noop.conf"
-            [Source]
-            Type=regular-file
-            Path=/
-            MatchPattern=invalid@v.raw
-            [Target]
-            Type=regular-file
-            Path=/
-            EOF
+            cat <<-__EOF > "noop.conf"
+							[Source]
+							Type=regular-file
+							Path=/
+							MatchPattern=invalid@v.raw
+							[Target]
+							Type=regular-file
+							Path=/
+            __EOF
 
             # Fetch the current SHA256SUMS to append to it the new list of sha256 sums.
             curl -fsSLO https://github.com/forwardcomputers/sysext/releases/download/latest/SHA256SUMS || true
