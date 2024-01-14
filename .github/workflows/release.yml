@@ -26,12 +26,15 @@ jobs:
             xz-utils \
             gawk
 
+          curl -sLO --output-dir /tmp $( curl -sL 'https://api.github.com/repos/forwardcomputers/sysext/releases/latest' | jq -r '.assets[] | select( .name=="SHA256SUMS" ).browser_download_url' )
+
           APPS=( $( find . -maxdepth 1 -name "create*.sh" -exec bash -c 'echo ${0:9:-10}' {} \; ) )
           images=()
 
           for app in "${APPS[@]}"; do
               eval _version=\$\( "$( awk '/#_VERSION/ {print substr($0, index($0,$2))}' ./create_${app}_sysext.sh )" \)
-              images+=("${app}-${_version}")
+              image="${app}-${_version}"
+              grep "${image}" /tmp/SHA256SUMS || images+=("${app}-${_version}")
           done
 
           streams=()
