@@ -54,28 +54,28 @@ jobs:
                 component="${stream%:*}"
                 pattern="${stream#*:}"
                 cat <<-_EOF > "${component}.conf"
-									[Transfer]
-									Verify=false
-									[Source]
-									Type=url-file
-									Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
-									MatchPattern=${component}${pattern}-%a.raw
-									[Target]
-									InstancesMax=3
-									Type=regular-file
-									Path=/opt/extensions/${component%-*}
-									CurrentSymlink=/etc/extensions/${component%-*}.raw
+          [Transfer]
+          Verify=false
+          [Source]
+          Type=url-file
+          Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
+          MatchPattern=${component}${pattern}-%a.raw
+          [Target]
+          InstancesMax=3
+          Type=regular-file
+          Path=/opt/extensions/${component%-*}
+          CurrentSymlink=/etc/extensions/${component%-*}.raw
                 _EOF
             done
 
             cat <<-__EOF > "noop.conf"
-							[Source]
-							Type=regular-file
-							Path=/
-							MatchPattern=invalid@v.raw
-							[Target]
-							Type=regular-file
-							Path=/
+          [Source]
+          Type=regular-file
+          Path=/
+          MatchPattern=invalid@v.raw
+          [Target]
+          Type=regular-file
+          Path=/
             __EOF
 
             # Fetch the current SHA256SUMS to append to it the new list of sha256 sums.
