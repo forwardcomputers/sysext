@@ -17,6 +17,7 @@ jobs:
       # build the images and generate a manifest
       - name: build
         run: |
+          set -x
           echo "_update=false" >> $env:GITHUB_ENV
 
           sudo apt update -qq && sudo apt install -yqq \
@@ -53,17 +54,17 @@ jobs:
                 component="${stream%:*}"
                 pattern="${stream#*:}"
                 cat << EOF > "${component}.conf"
-            [Transfer]
-            Verify=false
-            [Source]
-            Type=url-file
-            Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
-            MatchPattern=${component}${pattern}-%a.raw
-            [Target]
-            InstancesMax=3
-            Type=regular-file
-            Path=/opt/extensions/${component%-*}
-            CurrentSymlink=/etc/extensions/${component%-*}.raw
+              [Transfer]
+              Verify=false
+              [Source]
+              Type=url-file
+              Path=https://github.com/forwardcomputers/sysext/releases/latest/download/
+              MatchPattern=${component}${pattern}-%a.raw
+              [Target]
+              InstancesMax=3
+              Type=regular-file
+              Path=/opt/extensions/${component%-*}
+              CurrentSymlink=/etc/extensions/${component%-*}.raw
             EOF
             done
 
