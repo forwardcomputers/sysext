@@ -44,7 +44,7 @@ jobs:
               component="${image%-*}"
               version="${image#*-}"
               for arch in x86-64 arm64; do
-                ARCH="${arch}" "./create_${component}_sysext.sh" "${version}" "${component}"
+                ARCH="${arch}" "./${component}_sysext.sh" "${version}" "${component}"
                 mv "${component}.raw" "${image}-${arch}.raw"
               done
               streams+=("${component}:-@v")
