@@ -27,6 +27,10 @@ jobs:
             xz-utils \
             gawk
 
+            pwd
+            ls -la
+            exit
+
           _SYSEXT_DIR=/opt/filer/os/sysext
           APPS=( $( find "${_SYSEXT_DIR}" -maxdepth 1 -name "create*.sh" -exec basename {} \; ) )
           images=()
