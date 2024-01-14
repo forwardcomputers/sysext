@@ -75,7 +75,7 @@ jobs:
           EOF
 
           # Fetch the current SHA256SUMS to append to it the new list of sha256 sums.
-          curl -fsSLO https://github.com/forwardcomputers/sysext/releases/download/latest/SHA256SUMS
+          curl -fsSLO https://github.com/forwardcomputers/sysext/releases/download/latest/SHA256SUMS || true
           sha256sum *.raw >> SHA256SUMS
           sort --unique --key 2 --output SHA256SUMS SHA256SUMS
 
