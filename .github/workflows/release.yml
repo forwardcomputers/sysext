@@ -34,7 +34,7 @@ jobs:
           images=()
 
           for app in "${APPS[@]}"; do
-              eval _version=\$\( "$( awk '/#_VERSION/ {print substr($0, index($0,$2))}' ./${app} )" \)
+              eval _version=\$\( "$( awk '/#_VERSION/ {print substr($0, index($0,$2))}' ./create_${app}_sysext.sh )" \)
               images+=("${app}-${_version}")
           done
 
