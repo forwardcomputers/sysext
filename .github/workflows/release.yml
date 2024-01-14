@@ -1,14 +1,9 @@
 name: Build and release Systemd sysext images
 on:
-  push:
-    tags:
-      - '*'
   schedule:
     # Times are in UTC, this job is run daily @ 14HRS = 9AM EST, 20HRS = 3PM EST
     - cron: "0 14,20 * * *"
   workflow_dispatch:
-    tags:
-      - '*'
 
 jobs:
   build:
@@ -84,9 +79,14 @@ jobs:
           sort --unique --key 2 --output SHA256SUMS SHA256SUMS
 
       # create a Github release with the generated artifacts
+      - name: Generate release tag
+        id: tag
+        run: |
+          echo "::set-output name=release_tag::Built_$(date +"%Y.%m.%d_%H-%M")"
       - name: release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.tag.outputs.release_tag }}
           files: |
             SHA256SUMS
             *.raw
